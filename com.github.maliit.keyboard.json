@@ -1,0 +1,84 @@
+{
+    "id": "com.github.maliit.keyboard",
+    "branch": "master",
+    "runtime": "org.kde.Platform",
+    "runtime-version": "5.14",
+    "sdk": "org.kde.Sdk",
+    "command": "maliit-keyboard",
+    "tags": ["nightly"],
+    "desktop-file-name-suffix": " (Nightly)",
+    "finish-args": [
+        "--share=ipc", "--socket=wayland", "--device=dri",
+        "--env=LD_LIBRARY_PATH=/app/lib:/app/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/GL/default/lib:/usr/lib/x86_64-linux-gnu/openh264/extra",
+        "--env=QT_WAYLAND_SHELL_INTEGRATION=inputpanel-shell"
+    ],
+
+    "cleanup": [
+        "/share/bash-completion"
+    ],
+    "build-options" : {
+        "env": {
+            "MOUNT_FUSE_PATH": "../tmp/",
+            "BASH_COMPLETIONSDIR": "/app/share/bash-completion/completions"
+        }
+    },
+
+    "modules": [
+        {
+            "name": "doxygen",
+            "buildsystem": "cmake-ninja",
+            "config-opts": [ "-DCMAKE_BUILD_TYPE=Release" ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/doxygen/doxygen/archive/Release_1_8_18.tar.gz",
+                    "sha256": "9c88f733396dca16139483045d5afa5bbf19d67be0b8f0ea43c4e813ecfb2aa2"
+                }
+            ],
+            "cleanup": [ "*" ]
+        },
+        {
+            "name": "maliit-framework",
+            "config-opts": [ "-DENABLE_TESTING=OFF" ],
+            "buildsystem": "cmake-ninja",
+            "builddir": true,
+            "sources": [ { "type": "git", "url": "https://github.com/maliit/framework.git" } ]
+        },
+        {
+            "name": "qt5-feedback",
+            "buildsystem": "qmake",
+            "cleanup-platform": [ "/bin", "/mkspecs" ],
+            "make-install-args": ["INSTALL_ROOT=/app/scratchdir"],
+            "post-install" : [
+                "cp -r /app/scratchdir/usr/* /app",
+                "rm -rf /app/scratchdir",
+                "ln -s /app/lib/*linux*/*.so* /app/lib"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://code.qt.io/qt/qtfeedback.git"
+                }
+            ]
+        },
+        {
+            "name": "maliit-keyboard",
+            "config-opts": [ "-DENABLE_TESTING=OFF", "-DQT5_STRICT_PLUGIN_GLOB=ON", "-DCMAKE_DISABLE_FIND_PACKAGE_Pinyin=ON", "-Denable-presage=OFF", "-Wno-dev" ],
+            "buildsystem": "cmake-ninja",
+            "builddir": true,
+            "sources": [ { "type": "git", "url": "https://github.com/maliit/keyboard.git" } ]
+        },
+        {
+            "name": "polish",
+            "buildsystem": "simple",
+            "build-commands": [
+                "mkdir -p ${DESTDIR}/app/share/applications/",
+                "echo '[Desktop Entry]
+Name=Maliit
+Exec=maliit-keyboard
+Type=Application
+' > ${DESTDIR}/app/share/applications/com.github.maliit.keyboard.desktop"
+            ]
+        }
+    ]
+}
