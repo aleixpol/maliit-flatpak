@@ -9,7 +9,9 @@
     "desktop-file-name-suffix": " (Nightly)",
     "finish-args": [
         "--share=ipc", "--socket=wayland", "--device=dri",
-        "--env=LD_LIBRARY_PATH=/app/lib:/app/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/GL/default/lib:/usr/lib/x86_64-linux-gnu/openh264/extra",
+
+        "--talk-name=org.gtk.vfs",
+        "--talk-name=org.a11y.Bus",
         "--env=QT_WAYLAND_SHELL_INTEGRATION=inputpanel-shell"
     ],
 
@@ -39,7 +41,7 @@
         },
         {
             "name": "maliit-framework",
-            "config-opts": [ "-DENABLE_TESTING=OFF" ],
+            "config-opts": [ "-DENABLE_TESTING=OFF", "-Denable-wayland-gtk=OFF", "-Denable-qt5-inputcontext=OFF" ],
             "buildsystem": "cmake-ninja",
             "builddir": true,
             "sources": [ { "type": "git", "url": "https://github.com/maliit/framework.git" } ]
@@ -63,7 +65,7 @@
         },
         {
             "name": "maliit-keyboard",
-            "config-opts": [ "-DENABLE_TESTING=OFF", "-DQT5_STRICT_PLUGIN_GLOB=ON", "-DCMAKE_DISABLE_FIND_PACKAGE_Pinyin=ON", "-Denable-presage=OFF", "-Wno-dev" ],
+            "config-opts": [ "-DENABLE_TESTING=OFF", "-DQT5_STRICT_PLUGIN_GLOB=ON", "-DCMAKE_DISABLE_FIND_PACKAGE_Pinyin=ON", "-Denable-presage=OFF" ],
             "buildsystem": "cmake-ninja",
             "builddir": true,
             "sources": [ { "type": "git", "url": "https://github.com/maliit/keyboard.git" } ]
